@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+"use client";
+import { use, useState } from "react";
+import copy from 'clipboard-copy';
 import { improveResume } from "../utils/api";
 
 export default function ResumeGenerator() {
@@ -27,9 +28,7 @@ export default function ResumeGenerator() {
       {resume && (
         <div>
           <pre>{resume}</pre>
-          <CopyToClipboard text={resume}>
-            <button>Copy to Clipboard</button>
-          </CopyToClipboard>
+          <button onClick={() => copy(resume)}>Copy to Clipboard</button>
           <DownloadButton content={resume} filename="resume.pdf" />
         </div>
       )}

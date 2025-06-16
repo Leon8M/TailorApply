@@ -1,7 +1,7 @@
-import { runFlow } from '@genkit-ai/flow';
+import { runFlow, initGenkit } from '@genkit-ai/core'; // Changed and combined
+
 import { resumeFlow } from '@/flows/resumeFlow';
 import { NextResponse } from 'next/server';
-import { initGenkit } from '@genkit-ai/core';
 import config from '../../../../genkit.config.js';
 
 // Initialize Genkit with your configuration

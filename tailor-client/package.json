@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@genkit-ai/core": "^1.12.0",
     "@genkit-ai/googleai": "^1.12.0",
     "@react-pdf/renderer": "^4.3.0",
     "clipboard-copy": "^4.0.1",
@@ -17,7 +18,8 @@
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-firebase-hooks": "^5.1.1"
+    "react-firebase-hooks": "^5.1.1",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

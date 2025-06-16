@@ -1,31 +1,38 @@
-import { runFlow, initGenkit } from '@genkit-ai/core'; // Changed and combined
-
-import { resumeFlow } from '@/flows/resumeFlow';
+// app/api/generate/route.js
 import { NextResponse } from 'next/server';
-import config from '../../../../genkit.config.js';
+import { runFlow } from '@genkit-ai/core';
+import resumeFlow from '../../../flows/resumeFlow';
 
-// Initialize Genkit with your configuration
-initGenkit(config);
+// Initialize Genkit
+import '../../lib/genkit-init';
 
-export async function POST(req) {
-  const { jobDescription, userQualifications } = await req.json();
+export const dynamic = 'force-dynamic'; // Ensure dynamic execution
 
+export async function POST(request) {
   try {
-    // Run the flow with the provided input
-    const resumeText = await runFlow(resumeFlow, { jobDescription, userQualifications });
-    
-    // Return the successful response
-    return NextResponse.json({ resumeText });
+    const { jobDescription, userQualifications } = await request.json();
+
+    if (!jobDescription || !userQualifications) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    const result = await runFlow(resumeFlow, {
+      jobDescription,
+      userQualifications
+    });
+
+    return NextResponse.json({ resumeText: result });
 
   } catch (error) {
-    console.error("Error running Genkit flow:", error);
-    
-    // Provide a user-friendly error message
-    const errorMessage = error.cause?.message || "An unexpected error occurred.";
-    
-    // Return an error response
+    console.error('Resume generation error:', error);
     return NextResponse.json(
-      { error: "Failed to generate resume.", details: errorMessage },
+      { 
+        error: 'Failed to generate resume',
+        details: error.message 
+      },
       { status: 500 }
     );
   }

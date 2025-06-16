@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@genkit-ai/googleai": "^1.12.0",
     "@react-pdf/renderer": "^4.3.0",
     "clipboard-copy": "^4.0.1",
     "firebase": "^11.9.1",
+    "genkit": "^1.12.0",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import copy from 'clipboard-copy';
-import { improveResume } from "../utils/api";
+import { generateResumeAPI } from "../utils/api"; // Updated import
 import DownloadButton from "./DownloadButton";
 
 export default function ResumeGenerator() {
@@ -10,23 +10,31 @@ export default function ResumeGenerator() {
   const [resume, setResume] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleCopy = () => {
+    copy(resume);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000); // Reset after 2 seconds
+  };
 
   const generateResume = async () => {
     if (!jobDescription.trim() || !userQualifications.trim()) {
-      setError("Please fill in both fields");
+      setError("Please fill in both the job description and your qualifications.");
       return;
     }
 
     setIsLoading(true);
     setError(null);
-    
+    setResume(""); // Clear previous resume
+
     try {
-      const { improvedText, error } = await improveResume(jobDescription, userQualifications);
-      if (error) throw new Error(error);
-      setResume(improvedText);
+      // Call the new API function
+      const result = await generateResumeAPI(jobDescription, userQualifications);
+      setResume(result.resumeText); // Updated to use resumeText
     } catch (err) {
       console.error("Generation error:", err);
-      setError("Failed to generate resume. Please try again.");
+      setError(err.message || "An unknown error occurred while generating the resume.");
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +51,7 @@ export default function ResumeGenerator() {
           </label>
           <textarea
             className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
-            placeholder="Paste the job description here..."
+            placeholder="Paste the target job description here..."
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
             rows={6}
@@ -52,14 +60,14 @@ export default function ResumeGenerator() {
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-300">
-            Your Qualifications
+            Your Qualifications & Experience
           </label>
           <textarea
             className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
-            placeholder="List your skills, experience, and education..."
+            placeholder="List your skills, work experience, projects, and education..."
             value={userQualifications}
             onChange={(e) => setUserQualifications(e.target.value)}
-            rows={6}
+            rows={8} // Increased rows for more space
           />
         </div>
 
@@ -78,25 +86,25 @@ export default function ResumeGenerator() {
               </svg>
               Generating...
             </span>
-          ) : 'Generate Resume'}
+          ) : '✨ Generate Tailored Resume'}
         </button>
 
         {error && (
           <div className="p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-300">
-            {error}
+            <strong>Error:</strong> {error}
           </div>
         )}
 
         {resume && (
-          <div className="mt-8 space-y-4">
+          <div className="mt-8 space-y-4 animate-fade-in">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-white">Your Custom Resume</h3>
               <div className="flex space-x-3">
                 <button
-                  onClick={() => copy(resume)}
+                  onClick={handleCopy}
                   className="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm font-medium transition-colors duration-200"
                 >
-                  Copy to Clipboard
+                  {copySuccess ? 'Copied!' : 'Copy Markdown'}
                 </button>
                 <DownloadButton content={resume} filename="tailored-resume.pdf" />
               </div>
